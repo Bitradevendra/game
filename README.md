@@ -1,8 +1,22 @@
 # game
 
-`game` is published from the current `D:\game` folder.
+`game` currently contains only the repository README and reflects the current state of the `D:\game` folder.
 
-## Notes
+## Overview
 
-This repository reflects the folder as it currently exists on disk.
-If you add the actual game source files later, they can be committed here.
+This repository was created from the existing folder exactly as requested. It can be used as the future home of the game source code.
+
+## Project Structure
+
+```text
+game/
+`-- README.md
+```
+
+## Running The Project
+
+There are no source files in the folder yet, so there is nothing to run at this time.
+
+## How It Works
+
+At the moment the repository acts as a placeholder for the project until the actual game files are added.
