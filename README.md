@@ -1,10 +1,17 @@
-# game
+# Warzone Exodus
 
-`game` is a browser-based 3D action game titled `Warzone Exodus`, built with HTML, CSS, JavaScript, and Three.js.
+A browser-based 3D action game that aims for big energy: cinematic menus, AI enemies, progression systems, battle-royale style pressure, and a surprisingly broad module layout for a front-end game project.
 
-## Overview
+## Why It Gets Attention Fast
 
-The project appears to be a single-player battle-royale style game with AI enemies, combat systems, inventory, HUD overlays, progression, missions, and world-generation logic.
+Open the landing screen and the intent is obvious: this is trying to feel like a full-scale action title, not a tiny canvas experiment. `Warzone Exodus` is built to create momentum immediately with its title treatment, HUD layering, game systems, and modular code layout.
+
+## What It Does
+
+- runs as a browser-based 3D action game using HTML, CSS, JavaScript, and Three.js
+- includes campaign and survival-style framing
+- organizes logic into AI, combat, world, UI, inventory, and progression modules
+- presents a fully themed interface with loading screens, menus, HUD, and mission flow
 
 ## Project Structure
 
@@ -32,23 +39,27 @@ game/
 
 ## Requirements
 
-- a modern desktop or mobile web browser
-- internet access for CDN-hosted dependencies such as Three.js and fonts
+- a modern browser
+- internet access for CDN-hosted Three.js and fonts
 
-## Running The Project
+## Run Locally
 
-This project is static, so you can open it directly in a browser:
+Open the project directly:
 
 ```bash
 start index.html
 ```
 
-For a cleaner local workflow, serve the folder with a simple local server and then open the served URL in your browser.
+Or serve it from a simple local static server for a cleaner workflow.
 
 ## How It Works
 
-- `index.html` defines the main game canvas, menu screens, HUD, and overlay UI
-- `css/` contains the visual styling for gameplay, HUD, menus, inventory, and touch controls
-- `js/main.js` and `js/game.js` initialize and coordinate the game flow
-- `js/ai/`, `js/combat/`, `js/entities/`, `js/systems/`, `js/ui/`, and `js/world/` split the game logic into focused modules
-- Three.js is used for the rendering layer, while the rest of the code manages game systems and interface state
+- `index.html` sets up the canvas, menus, overlays, HUD, and mission flow UI.
+- `css/` styles the entire experience from combat HUD to inventory and touch controls.
+- `js/main.js` and `js/game.js` coordinate bootstrapping and game flow.
+- `js/ai/`, `js/combat/`, `js/entities/`, `js/systems/`, `js/ui/`, and `js/world/` split the gameplay into focused modules.
+- Three.js provides the rendering base, while the rest of the code handles game state, combat, progression, and interface behavior.
+
+## Why Someone Would Care
+
+This repo is compelling for front-end game builders who want to study how a browser game can be organized to feel much larger, louder, and more ambitious than its footprint suggests.
