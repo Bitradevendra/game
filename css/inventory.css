@@ -1,0 +1,407 @@
+/* ====================================================
+   WARZONE EXODUS — INVENTORY CSS
+   Grid inventory, tooltips, skill tree
+   ==================================================== */
+
+/* ---------- INVENTORY WINDOW ---------- */
+.inventory-window {
+    background: rgba(4, 10, 18, 0.97);
+    border: 1px solid rgba(0, 212, 255, 0.25);
+    border-radius: 12px;
+    padding: 24px;
+    width: min(90vw, 820px);
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.inventory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+
+    h2 {
+        font-family: var(--font-hud);
+        color: var(--primary);
+        font-size: 1.2rem;
+        letter-spacing: 3px;
+    }
+}
+
+.inventory-body {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 20px;
+    overflow: hidden;
+}
+
+/* ---------- INVENTORY GRID ---------- */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 5px;
+    align-content: start;
+    overflow-y: auto;
+    max-height: 70vh;
+    padding-right: 4px;
+}
+
+.inv-slot {
+    aspect-ratio: 1;
+    background: rgba(0, 212, 255, 0.04);
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    min-height: 64px;
+    overflow: hidden;
+}
+
+.inv-slot:hover {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.4);
+    transform: scale(1.03);
+}
+
+.inv-slot.filled {
+    cursor: pointer;
+}
+
+/* Rarity borders */
+.inv-slot.common {
+    border-color: rgba(160, 160, 160, 0.4);
+}
+
+.inv-slot.rare {
+    border-color: rgba(68, 136, 255, 0.6);
+    box-shadow: 0 0 8px rgba(68, 136, 255, 0.2);
+}
+
+.inv-slot.epic {
+    border-color: rgba(170, 34, 255, 0.6);
+    box-shadow: 0 0 10px rgba(170, 34, 255, 0.25);
+}
+
+.inv-slot.legendary {
+    border-color: rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+}
+
+.item-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+.item-count {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-family: var(--font-hud);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+}
+
+.item-durability {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.item-durability-fill {
+    height: 100%;
+    background: var(--success);
+}
+
+.item-durability-fill.medium {
+    background: #ffaa00;
+}
+
+.item-durability-fill.low {
+    background: var(--danger);
+}
+
+/* ---------- INVENTORY SIDEBAR ---------- */
+.inventory-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.player-stats-panel,
+.equipped-weapons {
+    background: rgba(0, 212, 255, 0.04);
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.player-stats-panel h3,
+.equipped-weapons h3 {
+    font-family: var(--font-hud);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: var(--primary);
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.player-stats-panel div {
+    font-size: 0.85rem;
+    color: var(--text);
+    padding: 4px 0;
+}
+
+.equipped-slot {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ---------- TOOLTIP ---------- */
+.item-tooltip {
+    position: fixed;
+    background: rgba(4, 10, 18, 0.97);
+    border: 1px solid rgba(0, 212, 255, 0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    min-width: 200px;
+    max-width: 280px;
+    z-index: 9000;
+    pointer-events: none;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(12px);
+}
+
+.tooltip-name {
+    font-family: var(--font-hud);
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.tooltip-rarity {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    font-family: var(--font-hud);
+}
+
+.rarity-common {
+    color: #aaaaaa;
+}
+
+.rarity-rare {
+    color: #4488ff;
+}
+
+.rarity-epic {
+    color: #cc44ff;
+}
+
+.rarity-legendary {
+    color: var(--gold);
+}
+
+.tooltip-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.tooltip-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 8px;
+}
+
+.tooltip-stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+}
+
+.tooltip-stat-value {
+    color: var(--success);
+}
+
+/* ---------- LOADOUT / SKILL TREE ---------- */
+.loadout-window {
+    background: rgba(4, 10, 18, 0.97);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 12px;
+    padding: 28px;
+    width: min(95vw, 1100px);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.loadout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+
+    h2 {
+        font-family: var(--font-hud);
+        color: var(--primary);
+        font-size: 1.3rem;
+        letter-spacing: 3px;
+    }
+}
+
+.skill-points-banner {
+    font-family: var(--font-hud);
+    font-size: 0.9rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+}
+
+.skill-tree-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+    max-height: 70vh;
+    padding: 4px;
+}
+
+/* ---------- SKILL BRANCHES ---------- */
+.skill-branch {
+    background: rgba(0, 212, 255, 0.03);
+    border: 1px solid rgba(0, 212, 255, 0.12);
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skill-branch-title {
+    font-family: var(--font-hud);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.skill-branch-title.combat {
+    color: var(--danger);
+    background: rgba(255, 34, 68, 0.1);
+    border: 1px solid rgba(255, 34, 68, 0.2);
+}
+
+.skill-branch-title.survival {
+    color: var(--success);
+    background: rgba(0, 255, 136, 0.08);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+}
+
+.skill-branch-title.stealth {
+    color: #9955ff;
+    background: rgba(153, 85, 255, 0.08);
+    border: 1px solid rgba(153, 85, 255, 0.2);
+}
+
+.skill-branch-title.tech {
+    color: var(--primary);
+    background: rgba(0, 212, 255, 0.06);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+/* ---------- SKILL NODES ---------- */
+.skill-node {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+}
+
+.skill-node:hover:not(.unavailable) {
+    border-color: var(--primary);
+    background: rgba(0, 212, 255, 0.08);
+    transform: translateX(4px);
+}
+
+.skill-node.unlocked {
+    border-color: rgba(0, 255, 136, 0.4);
+    background: rgba(0, 255, 136, 0.06);
+    cursor: default;
+}
+
+.skill-node.unavailable {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+.skill-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.skill-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.skill-name {
+    font-family: var(--font-hud);
+    font-size: 0.78rem;
+    color: #fff;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.skill-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.3;
+}
+
+.skill-cost {
+    font-family: var(--font-hud);
+    font-size: 0.7rem;
+    color: var(--gold);
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+.skill-unlocked-badge {
+    color: var(--success);
+    font-size: 1rem;
+    flex-shrink: 0;
+}

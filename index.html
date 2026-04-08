@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Warzone Exodus — AAA Battle Royale</title>
+  <meta name="description"
+    content="An epic single-player battle royale with 50 AI enemies, dynamic weather, day/night cycle, and deep progression." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet" />
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/hud.css" />
+  <link rel="stylesheet" href="css/menu.css" />
+  <link rel="stylesheet" href="css/inventory.css" />
+  <link rel="stylesheet" href="css/touch.css" />
+</head>
+
+<body>
+
+  <!-- ██ GAME CANVAS — always live, sits behind all UI ██ -->
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ================== LOADING SCREEN ================== -->
+  <div id="loading-screen" class="screen hidden">
+    <div class="loading-content">
+      <div class="loading-logo">⚔ WARZONE EXODUS</div>
+      <div class="loading-spinner"></div>
+      <div id="loading-status" class="loading-status">Initializing...</div>
+      <div class="loading-bars">
+        <div class="loading-bar-fill"></div>
+      </div>
+      <div class="loading-tip">💡 Aim for the head — headshots deal 2.5x damage!</div>
+    </div>
+  </div>
+
+  <!-- ================== MAIN MENU ================== -->
+  <div id="main-menu" class="screen menu-screen">
+    <div class="menu-overlay"></div>
+    <div class="menu-content">
+      <div class="menu-title-block">
+        <div class="menu-subtitle">SINGLE PLAYER BATTLE ROYALE</div>
+        <h1 class="menu-title">WARZONE<br /><span class="title-accent">EXODUS</span></h1>
+        <div class="menu-version">v1.0 — 50 AI ENEMIES</div>
+      </div>
+      <nav class="menu-nav">
+        <button id="btn-play" class="menu-btn primary"><span class="btn-icon">🎮</span>CAMPAIGN</button>
+        <button id="btn-survival" class="menu-btn"><span class="btn-icon">🌊</span>SURVIVAL MODE</button>
+        <button id="btn-loadout" class="menu-btn"><span class="btn-icon">�</span>LOADOUT & SKILLS</button>
+        <button id="btn-achievements" class="menu-btn"><span class="btn-icon">🏆</span>ACHIEVEMENTS</button>
+        <button id="btn-settings" class="menu-btn"><span class="btn-icon">⚙</span>SETTINGS</button>
+      </nav>
+      <div class="menu-footer">
+        <div id="player-info-strip">
+          <span id="menu-player-level">LV 1</span>
+          <div class="menu-xp-bar">
+            <div id="menu-xp-fill"></div>
+          </div>
+          <span id="menu-xp-label">0 / 500 XP</span>
+        </div>
+      </div>
+      <div class="menu-animated-particles" id="menu-particles"></div>
+    </div>
+  </div>
+
+  <!-- ================== MISSION SELECT ================== -->
+  <div id="mission-select" class="screen hidden">
+    <div class="mission-select-header">
+      <button id="btn-back-to-menu" class="back-btn">← BACK</button>
+      <h2 class="section-title">SELECT MISSION</h2>
+    </div>
+    <div id="mission-list" class="mission-list"></div>
+  </div>
+
+  <div id="game-container" class="hidden">
+
+    <!-- ==================== HUD ==================== -->
+    <div id="hud" class="hidden">
+
+      <!-- TOP BAR -->
+      <div class="hud-top-bar">
+        <div class="hud-info-block">
+          <div id="hud-mission-name" class="hud-mission-name">MISSION 1</div>
+          <div id="hud-objective" class="hud-objective">Eliminate all enemies</div>
+        </div>
+        <div class="hud-center">
+          <div id="hud-day-night" class="hud-day-night">☀ DAY</div>
+          <div id="hud-time" class="hud-time">00:00</div>
+        </div>
+        <div class="hud-kill-box">
+          <span class="hud-kill-label">KILLS</span>
+          <span id="hud-kills" class="hud-kill-count">0</span>
+          <span class="hud-slash">/</span>
+          <span id="hud-total-enemies" class="hud-total">50</span>
+        </div>
+      </div>
+
+      <!-- KILL FEED -->
+      <div id="kill-feed" class="kill-feed"></div>
+
+      <!-- CROSSHAIR -->
+      <div id="crosshair">
+        <div class="ch-top"></div>
+        <div class="ch-bottom"></div>
+        <div class="ch-left"></div>
+        <div class="ch-right"></div>
+        <div class="ch-dot"></div>
+      </div>
+
+      <!-- HITMARKER -->
+      <div id="hitmarker" class="hitmarker hidden">✕</div>
+
+      <!-- NOTIFICATIONS -->
+      <div id="notifications" class="notifications"></div>
+
+      <!-- XP POPUPS -->
+      <div id="xp-popups" class="xp-popups"></div>
+
+      <!-- DAMAGE INDICATORS -->
+      <div id="damage-indicators"></div>
+
+      <!-- STATUS EFFECTS -->
+      <div id="status-effects" class="status-effects"></div>
+
+      <!-- WAVE NOTIFICATION -->
+      <div id="wave-notification" class="wave-notification hidden">
+        <div id="wave-text" class="wave-text">WAVE 1</div>
+      </div>
+
+      <!-- BOSS WARNING -->
+      <div id="boss-warning" class="boss-warning hidden">
+        <div class="boss-warning-title">⚠ BOSS INCOMING ⚠</div>
+        <div id="boss-name" class="boss-warning-name">TITAN</div>
+      </div>
+
+      <!-- LEVEL UP OVERLAY -->
+      <div id="level-up-overlay" class="level-up-overlay hidden">
+        <div class="level-up-text">LEVEL UP!</div>
+        <div id="level-up-number" class="level-up-number">2</div>
+        <div class="level-up-sub">+1 SKILL POINT</div>
+      </div>
+
+      <!-- INTERACT PROMPT -->
+      <div id="interact-prompt" class="interact-prompt hidden">
+        <span class="interact-key">[E]</span>
+        <span id="interact-action-text">Interact</span>
+      </div>
+
+      <!-- NPC DIALOGUE -->
+      <div id="npc-dialogue" class="npc-dialogue hidden">
+        <div id="npc-dialogue-icon" class="npc-icon">🧑</div>
+        <div class="npc-dialogue-body">
+          <div id="npc-dialogue-name" class="npc-name">NPC</div>
+          <div id="npc-dialogue-text" class="npc-text">Hello!</div>
+        </div>
+      </div>
+
+      <!-- BOTTOM HUD -->
+      <div class="hud-bottom">
+
+        <!-- HEALTH / ARMOR / STAMINA -->
+        <div class="hud-vitals">
+          <div class="vital-row">
+            <span class="vital-label">HP</span>
+            <div class="vital-bar-container">
+              <div id="health-bar" class="health-bar"></div>
+              <div id="health-regen-bar" class="health-regen-bar"></div>
+            </div>
+            <span id="health-value" class="vital-value">100</span>
+          </div>
+          <div class="vital-row">
+            <span class="vital-label">AR</span>
+            <div class="vital-bar-container">
+              <div id="armor-bar" class="armor-bar"></div>
+            </div>
+            <span id="armor-value" class="vital-value">0</span>
+          </div>
+          <div class="vital-row">
+            <span class="vital-label">SP</span>
+            <div class="vital-bar-container">
+              <div id="stamina-bar" class="stamina-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRENADE PANEL -->
+        <div class="grenade-panel">
+          <div class="grenade-item active" id="grenade-frag-slot">
+            <span>💣</span><span id="frag-count" class="g-count">2</span>
+          </div>
+          <div class="grenade-item" id="grenade-smoke-slot">
+            <span>💨</span><span id="smoke-count" class="g-count">1</span>
+          </div>
+          <div class="grenade-item" id="grenade-flash-slot">
+            <span>⚡</span><span id="flash-count" class="g-count">1</span>
+          </div>
+          <div class="grenade-item" id="grenade-molotov-slot">
+            <span>🔥</span><span id="molotov-count" class="g-count">0</span>
+          </div>
+        </div>
+
+        <!-- WEAPON HUD -->
+        <div class="weapon-hud">
+          <div id="weapon-slots" class="weapon-slots"></div>
+          <div class="weapon-info">
+            <div id="weapon-name" class="weapon-name">AK-47</div>
+            <div class="ammo-display">
+              <span id="current-ammo" class="current-ammo">30</span>
+              <span class="ammo-separator">/</span>
+              <span id="reserve-ammo" class="reserve-ammo">120</span>
+            </div>
+            <div id="weapon-mode" class="weapon-mode">AUTO</div>
+          </div>
+        </div>
+
+        <!-- ABILITY -->
+        <div class="ability-hud">
+          <div class="ability-icon" id="ability-icon-display">🎯</div>
+          <div class="ability-bar-container">
+            <div id="ability-bar" class="ability-bar"></div>
+          </div>
+          <div class="ability-key">[Q]</div>
+        </div>
+
+      </div><!-- end hud-bottom -->
+
+      <!-- MINIMAP -->
+      <div class="minimap-container">
+        <canvas id="minimap" width="160" height="160"></canvas>
+        <div id="minimap-zone" class="minimap-zone">CITY</div>
+        <div id="minimap-compass" class="minimap-compass">▲</div>
+      </div>
+
+      <!-- QUESTS SIDEBAR -->
+      <div class="quests-sidebar" id="quests-sidebar">
+        <div class="quests-title">OBJECTIVES</div>
+        <div id="quests-list" class="quests-list"></div>
+      </div>
+
+    </div><!-- end hud -->
+
+    <!-- ==================== INVENTORY PANEL ==================== -->
+    <div id="inventory-panel" class="screen-overlay hidden">
+      <div class="inventory-window">
+        <div class="inventory-header">
+          <h2>INVENTORY</h2>
+          <button id="close-inventory" class="close-btn">✕</button>
+        </div>
+        <div class="inventory-body">
+          <div id="inventory-grid" class="inventory-grid"></div>
+          <div class="inventory-sidebar">
+            <div class="player-stats-panel" id="inventory-stats-panel">
+              <h3>PLAYER STATS</h3>
+              <div id="inv-stat-level">Level: 1</div>
+              <div id="inv-stat-health">HP: 100/100</div>
+              <div id="inv-stat-armor">Armor: 0/100</div>
+            </div>
+            <div class="equipped-weapons" id="equipped-weapons-panel">
+              <h3>EQUIPPED</h3>
+              <div id="inv-primary" class="equipped-slot">Primary: —</div>
+              <div id="inv-secondary" class="equipped-slot">Secondary: —</div>
+              <div id="inv-melee" class="equipped-slot">Melee: —</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== LOADOUT / SKILL SCREEN ==================== -->
+    <div id="loadout-screen" class="screen-overlay hidden">
+      <div class="loadout-window">
+        <div class="loadout-header">
+          <h2>SKILL TREE</h2>
+          <div class="skill-points-banner">
+            SKILL POINTS: <span id="skill-points-count">0</span>
+          </div>
+          <button onclick="Utils.hide('loadout-screen')" class="close-btn">✕</button>
+        </div>
+        <div id="skill-tree-container" class="skill-tree-container"></div>
+      </div>
+    </div>
+
+    <!-- ==================== PAUSE MENU ==================== -->
+    <div id="pause-menu" class="screen-overlay hidden">
+      <div class="pause-window">
+        <h2 class="pause-title">⏸ PAUSED</h2>
+        <button id="btn-resume" class="pause-btn primary">▶ RESUME</button>
+        <button id="btn-settings-pause" class="pause-btn">⚙ SETTINGS</button>
+        <button id="btn-main-menu" class="pause-btn danger">🏠 MAIN MENU</button>
+      </div>
+    </div>
+
+  </div><!-- end game-container -->
+
+  <!-- ================== SETTINGS PANEL ================== -->
+  <div id="settings-panel" class="screen-overlay hidden">
+    <div class="settings-window">
+      <div class="settings-header">
+        <h2>⚙ SETTINGS</h2>
+        <button onclick="Utils.hide('settings-panel')" class="close-btn">✕</button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-row">
+          <label>Mouse Sensitivity</label>
+          <input type="range" id="mouse-sensitivity" min="1" max="10" step="0.5" value="5" />
+          <span id="sensitivity-label">5</span>
+        </div>
+        <div class="setting-row">
+          <label>Master Volume</label>
+          <input type="range" id="master-volume" min="0" max="1" step="0.1" value="0.7" />
+          <span id="volume-label">70%</span>
+        </div>
+        <div class="setting-row">
+          <label>Graphics Quality</label>
+          <select id="graphics-quality" class="settings-select">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>Show FPS</label>
+          <input type="checkbox" id="show-fps" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== DEATH SCREEN ================== -->
+  <div id="death-screen" class="screen hidden">
+    <div class="death-content">
+      <div class="death-title">💀 YOU DIED</div>
+      <div class="death-stats">
+        <div class="death-stat"><span>Kills</span><strong id="death-kills">0</strong></div>
+        <div class="death-stat"><span>Time Survived</span><strong id="death-time">0:00</strong></div>
+        <div class="death-stat"><span>Killed By</span><strong id="death-killer">Enemy</strong></div>
+        <div class="death-stat"><span>Wave Reached</span><strong id="death-wave">0</strong></div>
+      </div>
+      <div class="death-actions">
+        <button id="btn-retry" class="menu-btn primary">🔁 TRY AGAIN</button>
+        <button id="btn-death-menu" class="menu-btn">🏠 MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== VICTORY SCREEN ================== -->
+  <div id="victory-screen" class="screen hidden">
+    <div class="victory-content">
+      <div class="victory-title">🏆 MISSION COMPLETE!</div>
+      <div class="victory-banner">OBJECTIVE ACCOMPLISHED</div>
+      <div class="victory-stats">
+        <div class="victory-stat">
+          <div class="vs-icon">⚔</div>
+          <div class="vs-label">Kills</div>
+          <div id="victory-kills" class="vs-value">0</div>
+        </div>
+        <div class="victory-stat">
+          <div class="vs-icon">⏱</div>
+          <div class="vs-label">Time</div>
+          <div id="victory-time" class="vs-value">0:00</div>
+        </div>
+        <div class="victory-stat">
+          <div class="vs-icon">✨</div>
+          <div class="vs-label">XP Earned</div>
+          <div id="victory-xp" class="vs-value">+0</div>
+        </div>
+        <div class="victory-stat">
+          <div class="vs-icon">🎯</div>
+          <div class="vs-label">Accuracy</div>
+          <div id="victory-accuracy" class="vs-value">0%</div>
+        </div>
+      </div>
+      <div class="victory-actions">
+        <button id="btn-next-mission" class="menu-btn primary">▶ NEXT MISSION</button>
+        <button id="btn-play-again" class="menu-btn">🔁 PLAY AGAIN</button>
+        <button id="btn-victory-menu" class="menu-btn">🏠 MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================== ACHIEVEMENTS PANEL ================== -->
+  <div id="achievements-panel" class="screen-overlay hidden">
+    <div class="achievements-window">
+      <div class="ach-header">
+        <h2>🏆 ACHIEVEMENTS</h2>
+        <button onclick="Utils.hide('achievements-panel')" class="close-btn">✕</button>
+      </div>
+      <div id="achievements-list" class="achievements-list">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FPS counter -->
+  <div id="fps-counter" class="fps-counter hidden">60 FPS</div>
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <!-- Core -->
+  <script src="js/core/constants.js"></script>
+  <script src="js/core/utils.js"></script>
+  <script src="js/core/eventbus.js"></script>
+  <script src="js/core/savemanager.js"></script>
+  <script src="js/core/audioengine.js"></script>
+  <script src="js/core/particleengine.js"></script>
+  <!-- World -->
+  <script src="js/world/worldgenerator.js"></script>
+  <script src="js/world/zones.js"></script>
+  <!-- Entities -->
+  <script src="js/entities/enemy.js"></script>
+  <script src="js/entities/boss.js"></script>
+  <script src="js/entities/npc.js"></script>
+  <script src="js/entities/vehicle.js"></script>
+  <script src="js/entities/player.js"></script>
+  <!-- Combat -->
+  <script src="js/combat/weaponsystem.js"></script>
+  <script src="js/combat/projectile.js"></script>
+  <script src="js/combat/grenades.js"></script>
+  <script src="js/combat/abilities.js"></script>
+  <!-- AI -->
+  <script src="js/ai/pathfinding.js"></script>
+  <script src="js/ai/enemyai.js"></script>
+  <script src="js/ai/squadai.js"></script>
+  <!-- Systems -->
+  <script src="js/systems/inventory.js"></script>
+  <script src="js/systems/loot.js"></script>
+  <script src="js/systems/progression.js"></script>
+  <script src="js/systems/quests.js"></script>
+  <script src="js/systems/achievements.js"></script>
+  <script src="js/systems/wavesystem.js"></script>
+  <!-- UI -->
+  <script src="js/ui/input.js"></script>
+  <script src="js/ui/hud.js"></script>
+  <script src="js/ui/minimap.js"></script>
+  <script src="js/ui/notifications.js"></script>
+  <script src="js/ui/touchcontrols.js"></script>
+  <!-- Safety stubs (patches missing methods so nothing crashes) -->
+  <script src="js/core/stubs.js"></script>
+  <!-- Game orchestrator -->
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    // Live FPS counter & settings interactivity
+    (function () {
+      let frames = 0, lastTime = performance.now();
+      function countFPS() {
+        frames++;
+        const now = performance.now();
+        if (now - lastTime >= 1000) {
+          const fps = Math.round(frames * 1000 / (now - lastTime));
+          const el = document.getElementById('fps-counter');
+          if (el && !el.classList.contains('hidden')) el.textContent = fps + ' FPS';
+          frames = 0;
+          lastTime = now;
+        }
+        requestAnimationFrame(countFPS);
+      }
+      requestAnimationFrame(countFPS);
+
+      document.getElementById('show-fps')?.addEventListener('change', e => {
+        document.getElementById('fps-counter')?.classList.toggle('hidden', !e.target.checked);
+      });
+
+      document.getElementById('mouse-sensitivity')?.addEventListener('input', e => {
+        document.getElementById('sensitivity-label').textContent = e.target.value;
+      });
+
+      document.getElementById('master-volume')?.addEventListener('input', e => {
+        document.getElementById('volume-label').textContent = Math.round(e.target.value * 100) + '%';
+      });
+    })();
+  </script>
+
+</body>
+
+</html>
